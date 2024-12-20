@@ -6,12 +6,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -36,80 +38,94 @@ public class MainGUI extends JFrame {
         setLayout(new BorderLayout());
 
         // Inisialisasi JTextField
-        nimField = new JTextField(10);
-        namaField = new JTextField(10);
-        nilaiField = new JTextField(10);
+        nimField = new JTextField(20);
+        namaField = new JTextField(20);
+        nilaiField = new JTextField(20);
 
         // Setup controller and handler
         tableModel = new DefaultTableModel(new String[] { "NIM", "Nama", "Nilai" }, 0);
         handler = new LinkedListHandler(context.getLinkedList(), nimField, namaField, nilaiField, tableModel);
 
         // Setup panels
-        add(createLeftBottomPanel(), BorderLayout.WEST);
-        add(createCanvasPanel(), BorderLayout.CENTER);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createLeftPanel(), createCanvasPanel());
+        splitPane.setDividerLocation(300);
+        add(splitPane, BorderLayout.CENTER);
 
         // Setup action listeners
         setupActionListeners();
     }
 
-    private JPanel createLeftBottomPanel() {
-        JPanel leftBottomPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+    private JPanel createLeftPanel() {
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(createInputPanel(), BorderLayout.NORTH);
+        leftPanel.add(createTablePanel(), BorderLayout.CENTER);
+        return leftPanel;
+    }
 
-        // Panel kontrol (NIM, Nama, Nilai, tombol)
-        JPanel controlPanel = new JPanel(new GridBagLayout());
+    private JPanel createInputPanel() {
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        controlPanel.add(new JLabel("NIM:"), gbc);
-        gbc.gridx = 1;
-        controlPanel.add(nimField, gbc);
-
+        inputPanel.add(new JLabel("NIM:"), gbc);
         gbc.gridx = 0;
         gbc.gridy = 1;
-        controlPanel.add(new JLabel("Nama:"), gbc);
-        gbc.gridx = 1;
-        controlPanel.add(namaField, gbc);
+        inputPanel.add(nimField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        controlPanel.add(new JLabel("Nilai:"), gbc);
-        gbc.gridx = 1;
-        controlPanel.add(nilaiField, gbc);
-
-        // Tombol-tombol
-        JPanel buttonPanel = new JPanel();
-        JButton addButton = handler.getAddButton();
-        JButton findButton = handler.getFindButton();
-        JButton deleteButton = handler.getDeleteButton();
-        JButton clearButton = handler.getClearButton();
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(findButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(clearButton);
-
+        inputPanel.add(new JLabel("Nama:"), gbc);
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        controlPanel.add(buttonPanel, gbc);
+        inputPanel.add(namaField, gbc);
 
-        // Panel kosong untuk tabel
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        inputPanel.add(new JLabel("Nilai:"), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        inputPanel.add(nilaiField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        JButton addButton = handler.getAddButton();
+        inputPanel.add(addButton, gbc);
+
+        return inputPanel;
+    }
+
+    private JPanel createTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
         JTable table = new JTable(tableModel);
         JScrollPane tableScroll = new JScrollPane(table);
         tablePanel.add(tableScroll, BorderLayout.CENTER);
 
-        // Menambahkan panel kontrol dan tabel ke kiri bawah
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        leftBottomPanel.add(controlPanel, gbc);
+        JButton findButton = handler.getFindButton();
+        buttonPanel.add(findButton, gbc);
 
-        gbc.gridy = 1;
-        gbc.gridheight = 1;
-        leftBottomPanel.add(tablePanel, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        JButton deleteButton = handler.getDeleteButton();
+        buttonPanel.add(deleteButton, gbc);
 
-        return leftBottomPanel;
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        JButton clearButton = handler.getClearButton();
+        buttonPanel.add(clearButton, gbc);
+
+        tablePanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return tablePanel;
     }
 
     private JPanel createCanvasPanel() {
@@ -149,7 +165,7 @@ public class MainGUI extends JFrame {
         });
         clearButton.addActionListener(e -> {
             handler.handleClearAll();
-            context.getAnimationController().updateNodes();
+            context.getAnimationController().clearNodes();
             canvas.repaint();
         });
     }

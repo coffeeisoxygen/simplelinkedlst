@@ -29,6 +29,10 @@ public class AnimationController {
         }
     }
 
+    public void clearNodes() {
+        nodes.clear();
+    }
+
     public List<Node> getNodes() {
         return nodes;
     }

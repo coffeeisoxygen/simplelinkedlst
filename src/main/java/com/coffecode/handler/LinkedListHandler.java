@@ -53,7 +53,8 @@ public class LinkedListHandler implements ActionListener {
             case FIND_DATA -> handleFindData();
             case DELETE_DATA -> handleHapusData();
             case CLEAR_ALL -> handleClearAll();
-            default -> JOptionPane.showMessageDialog(null, "Unknown action command!", "Error", JOptionPane.ERROR_MESSAGE);
+            default ->
+                JOptionPane.showMessageDialog(null, "Unknown action command!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
